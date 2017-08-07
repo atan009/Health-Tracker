@@ -1,0 +1,28 @@
+.fullfluid {
+	padding: 0 !important;
+}
+
+.navBar {
+	list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+    width: 100vw;
+}
+
+.barItemCont {
+	float: left;
+}
+
+.barItem {
+	display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.barItem:hover {
+    background-color: #111;
+}
