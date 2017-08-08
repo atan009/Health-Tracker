@@ -2,9 +2,22 @@
 	padding: 0 !important;
 }
 
+.col-md-12 {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+    margin-left: 0;
+    width: 100vw;
+}
+
+.row {
+    margin-right: 0 !important;
+}
+
 .navBar {
 	list-style: none;
     margin: 0;
+    margin-right: 0;
+    margin-left: 0;
     padding: 0;
     overflow: hidden;
     background-color: #333;
@@ -24,5 +37,18 @@
 }
 
 .barItem:hover {
-    background-color: #111;
+    background-color: #556B2F;
+}
+
+.searchBox {
+    margin-top: 6.12245%;
+    width: 196px;
+}
+
+.searchButton {
+    margin-left: 20% !important;
+    height: 30px !important;
+    padding-top: 4px;
+    margin-top: 16.9328%;
+    background-color: #A9A9A9;
 }
