@@ -51,6 +51,10 @@ $(window).on("load", function() {
 		$(".brand", calItem).text(foodItem.get("brand"));
 		$(".cal-count", calItem).text(foodItem.get("calories"));
 		$(".serv-sz", calItem).text(foodItem.get("servingSize"));
+		var cal = $('p.total-cal').text();
+		var newCal = parseInt(cal.substring(cal.indexOf(' ') + 1, cal.length));
+		newCal = newCal + foodItem.get("calories");
+		$("p.total-cal").text("Total: "  + newCal);
 		calItem.appendTo(".cal-list");
 	});
 
@@ -59,7 +63,7 @@ $(window).on("load", function() {
 		food = $('.searchBox').val();
 		url = nutritionixURL + food + "?results=" + resultMin + "%3A" + resultMax + "&" + calMin + "&" + calMax + "&" + fields + "&" + appID + "&" + appKey;
 	
-		var foodItem = new foodCont;
+		var foodItem = new foodCont();
 
 		$.getJSON(url, function(data) {
 
@@ -74,7 +78,7 @@ $(window).on("load", function() {
 			searchList.add(foodItem);
 		}
 
-		console.log(searchList.models);
+		// console.log(searchList.models);
 
 		}).error(function(e) {
 			alert("Error with nutritionix api call");
