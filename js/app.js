@@ -11,17 +11,71 @@ $(window).on("load", function() {
 	var appKey = "appKey=+4d6ceae5b6d8ba87f064bc7e8e2f8589";
 	var url = "";
 
-	$('.ex-lsi').removeClass("list-search-item");
+	var searchItem = $(".ex-navBar .item-box").clone().removeClass('ex-lsi');
+	var exItem = $('.ex-lsi').removeClass("list-search-item");
 
+	var foodCont = Backbone.Model.extend({
+		defaults: {
+			name: "",
+			brand: "",
+			calories: "",
+			servingSize: ""
+		}
+
+	});
+		
+
+	var foodlist = Backbone.Collection.extend({
+		model: foodCont
+	});
+
+	var searchList = new foodlist([]);
+	var calItem;
+	var calList = new foodlist([]);
+
+	searchList.on("add", function(foodItem) {
+		searchItem = searchItem.clone();
+		$(".food-name", searchItem).text(foodItem.get("name"));
+		$(".brand", searchItem).text(foodItem.get("brand"));
+		$(".cal-count", searchItem).text(foodItem.get("calories"));
+		$(".serv-sz", searchItem).text(foodItem.get("servingSize"));
+		searchItem.on('click', function() {
+			calList.add(foodItem);
+		});
+		searchItem.appendTo(".list-search-results");
+	});
+
+	calList.on("add", function(foodItem) {
+		calItem = exItem.clone();
+		$(".food-name", calItem).text(foodItem.get("name"));
+		$(".brand", calItem).text(foodItem.get("brand"));
+		$(".cal-count", calItem).text(foodItem.get("calories"));
+		$(".serv-sz", calItem).text(foodItem.get("servingSize"));
+		calItem.appendTo(".cal-list");
+	});
 
 	$('.searchButton').on('click', function() {
+
 		food = $('.searchBox').val();
 		url = nutritionixURL + food + "?results=" + resultMin + "%3A" + resultMax + "&" + calMin + "&" + calMax + "&" + fields + "&" + appID + "&" + appKey;
 	
+		var foodItem = new foodCont;
 
 		$.getJSON(url, function(data) {
-		//TODO: does stuff here
-		console.log(JSON.stringify(data));
+
+		// console.log(data.hits.length);
+		for (var i = 0; i < data.hits.length; i++) {
+			foodItem = new foodCont({name: data.hits[i].fields.item_name, 
+				brand: data.hits[i].fields.brand_name, 
+				calories: data.hits[i].fields.nf_calories, 
+				servingSize: data.hits[i].fields.nf_serving_size_qty + " " + data.hits[i].fields.nf_serving_size_unit
+			});
+
+			searchList.add(foodItem);
+		}
+
+		console.log(searchList.models);
+
 		}).error(function(e) {
 			alert("Error with nutritionix api call");
 		});
