@@ -78,6 +78,10 @@ h3 {
     padding-top: 0 !important;
 }
 
+.col-md-6, .col-md-3 {
+    position: static !important;
+}
+
 .list-search-results, .ex-navBar, .cal-list {
     list-style: none;
     padding-left: 0;

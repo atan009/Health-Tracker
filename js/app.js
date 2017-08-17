@@ -72,6 +72,9 @@ $(window).on("load", function() {
 			cal = $('p.total-cal').text();
 			newCal = parseInt(cal.substring(cal.indexOf(' ') + 1, cal.length));
 			newCal = newCal - foodItem.get("calories");
+			if (calList.length === 1) {
+				newCal = 0;
+			}
 			$("p.total-cal").text("Total: " + newCal);
 			calList.remove(foodItem);
 			$(this).remove();
@@ -116,7 +119,7 @@ $(window).on("load", function() {
 	//store current tracked calorie list on closing window
 	window.onbeforeunload = function() {
 		localStorage.setItem('prevCalList', JSON.stringify(calList));
-	}
+	};
 	
 	//set calList to previous tracked list
 	if (retrievedObject.length != []) {
