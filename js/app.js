@@ -1,4 +1,16 @@
 $(window).on("load", function() {
+	$(".load").hide();
+	$(document).on({
+		ajaxStart: function() { 
+			$(".load").show();
+			console.log("Test");
+		},
+
+    	ajaxStop: function() {
+    		$(".load").hide();
+    	}
+	});
+	    
 	//Nutrionix search filters
 	var nutritionixURL = "https://api.nutritionix.com/v1_1/search/";
 	var food = "";
@@ -96,6 +108,10 @@ $(window).on("load", function() {
 		$.getJSON(url, function(data) {
 
 		//add items to searchlist collection
+		if (data.hits.length === 0) {
+			alert("No search results found");
+		}
+
 		for (var i = 0; i < data.hits.length; i++) {
 			foodItem = new foodCont({name: data.hits[i].fields.item_name, 
 				brand: data.hits[i].fields.brand_name, 

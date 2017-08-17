@@ -54,10 +54,15 @@ body {
 
 .searchButton {
     margin-left: 20% !important;
+    margin-right: 20% !important;
     height: 30px !important;
     padding-top: 4px;
     margin-top: 16.9328%;
     background-color: #A9A9A9;
+}
+
+.load {
+    padding-left: 50%;
 }
 
 h2 {
