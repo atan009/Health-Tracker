@@ -37,7 +37,7 @@ $(window).on("load", function() {
 
 	});
 		
-	//model
+	//searchFoodList
 	var searchFoodList = Backbone.Collection.extend({
 		model: foodCont,
 
@@ -52,52 +52,55 @@ $(window).on("load", function() {
 			$(".cal-count", searchItem).text(model.get("calories"));
 			$(".serv-sz", searchItem).text(model.get("servingSize"));
 
+			searchItem.on('click', function() {
+				calList.add(model);
+			});
+
 			searchItem.appendTo(".list-search-results");
+		}
+	});
+
+	//tracked food list
+	var trackedFoodList = Backbone.Collection.extend({
+		model: foodCont,
+
+		initialize: function() {
+			this.on('add', this.onModelAdded, this);
+		},
+
+		onModelAdded: function(model, collection, options) {
+			searchList.reset();
+			$(".list-search-results").empty();
+			calItem = exItem.clone();
+			$(".food-name", calItem).text(model.get("name"));
+			$(".brand", calItem).text(model.get("brand"));
+			$(".cal-count", calItem).text(model.get("calories"));
+			$(".serv-sz", calItem).text(model.get("servingSize"));
+			var cal = $('p.total-cal').text();
+			var newCal = parseInt(cal.substring(cal.indexOf(' ') + 1, cal.length));
+			newCal = newCal + model.get("calories");
+			$("p.total-cal").text("Total: "  + newCal);
+			calItem.appendTo(".cal-list");
+
+			//removing a tracked food
+			calItem.on('click', function() {
+				cal = $('p.total-cal').text();
+				newCal = parseInt(cal.substring(cal.indexOf(' ') + 1, cal.length));
+				newCal = newCal - model.get("calories");
+				if (calList.length === 1) {
+					newCal = 0;
+				}
+				$("p.total-cal").text("Total: " + newCal);
+				calList.remove(model);
+				$(this).remove();
+			});
 		}
 	});
 
 	//search + tracked collections
 	var searchList = new searchFoodList([]);
 	var calItem;
-	var calList = new searchFoodList([]);
-
-	//add all search buttons
-	searchList.on("add", function(foodItem) {
-
-		//clicking on a search
-		searchItem.on('click', function() {
-			calList.add(foodItem);
-		});
-	});
-
-	//adding tracked food
-	calList.on("add", function(foodItem) {
-		searchList.reset();
-		$(".list-search-results").empty();
-		calItem = exItem.clone();
-		$(".food-name", calItem).text(foodItem.get("name"));
-		$(".brand", calItem).text(foodItem.get("brand"));
-		$(".cal-count", calItem).text(foodItem.get("calories"));
-		$(".serv-sz", calItem).text(foodItem.get("servingSize"));
-		var cal = $('p.total-cal').text();
-		var newCal = parseInt(cal.substring(cal.indexOf(' ') + 1, cal.length));
-		newCal = newCal + foodItem.get("calories");
-		$("p.total-cal").text("Total: "  + newCal);
-		calItem.appendTo(".cal-list");
-
-		//removing a tracked food
-		calItem.on('click', function() {
-			cal = $('p.total-cal').text();
-			newCal = parseInt(cal.substring(cal.indexOf(' ') + 1, cal.length));
-			newCal = newCal - foodItem.get("calories");
-			if (calList.length === 1) {
-				newCal = 0;
-			}
-			$("p.total-cal").text("Total: " + newCal);
-			calList.remove(foodItem);
-			$(this).remove();
-		});
-	});
+	var calList = new trackedFoodList([]);
 
 	//search click
 	var queryView = Backbone.View.extend({
