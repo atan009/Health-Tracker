@@ -3,7 +3,6 @@ $(window).on("load", function() {
 	$(document).on({
 		ajaxStart: function() { 
 			$(".load").show();
-			console.log("Test");
 		},
 
     	ajaxStop: function() {
@@ -39,29 +38,36 @@ $(window).on("load", function() {
 	});
 		
 	//model
-	var foodlist = Backbone.Collection.extend({
-		model: foodCont
+	var searchFoodList = Backbone.Collection.extend({
+		model: foodCont,
+
+		initialize: function() {
+			this.on('add', this.onModelAdded, this);
+		},
+
+		onModelAdded: function(model, collection, options) {
+			searchItem = searchItem.clone();
+			$(".food-name", searchItem).text(model.get("name"));
+			$(".brand", searchItem).text(model.get("brand"));
+			$(".cal-count", searchItem).text(model.get("calories"));
+			$(".serv-sz", searchItem).text(model.get("servingSize"));
+
+			searchItem.appendTo(".list-search-results");
+		}
 	});
 
 	//search + tracked collections
-	var searchList = new foodlist([]);
+	var searchList = new searchFoodList([]);
 	var calItem;
-	var calList = new foodlist([]);
-
+	var calList = new searchFoodList([]);
 
 	//add all search buttons
 	searchList.on("add", function(foodItem) {
-		searchItem = searchItem.clone();
-		$(".food-name", searchItem).text(foodItem.get("name"));
-		$(".brand", searchItem).text(foodItem.get("brand"));
-		$(".cal-count", searchItem).text(foodItem.get("calories"));
-		$(".serv-sz", searchItem).text(foodItem.get("servingSize"));
-		
+
 		//clicking on a search
 		searchItem.on('click', function() {
 			calList.add(foodItem);
 		});
-		searchItem.appendTo(".list-search-results");
 	});
 
 	//adding tracked food
@@ -94,40 +100,47 @@ $(window).on("load", function() {
 	});
 
 	//search click
-	$('.searchButton').on('click', function() {
-		//reset search + collection
-		searchList.reset();
-		$(".list-search-results").empty();
+	var queryView = Backbone.View.extend({
 
-		food = $('.searchBox').val();
-		url = nutritionixURL + food + "?results=" + resultMin + "%3A" + resultMax + "&" + calMin + "&" + calMax + "&" + fields + "&" + appID + "&" + appKey;
-	
-		var foodItem = new foodCont();
+		events: {
+			"click .searchButton": "searchFunc"
+		},
 
-		//Nutrionix search request
-		$.getJSON(url, function(data) {
+		searchFunc: function() {
+			searchList.reset();
+			$(".list-search-results").empty();
 
-		//add items to searchlist collection
-		if (data.hits.length === 0) {
-			alert("No search results found");
-		}
+			food = $('.searchBox').val();
+			url = nutritionixURL + food + "?results=" + resultMin + "%3A" + resultMax + "&" + calMin + "&" + calMax + "&" + fields + "&" + appID + "&" + appKey;
+		
+			var foodItem = new foodCont();
 
-		for (var i = 0; i < data.hits.length; i++) {
-			foodItem = new foodCont({name: data.hits[i].fields.item_name, 
-				brand: data.hits[i].fields.brand_name, 
-				calories: data.hits[i].fields.nf_calories, 
-				servingSize: data.hits[i].fields.nf_serving_size_qty + " " + data.hits[i].fields.nf_serving_size_unit
+			//Nutrionix search request
+			$.getJSON(url, function(data) {
+
+			//add items to searchlist collection
+			if (data.hits.length === 0) {
+				alert("No search results found");
+			}
+
+			for (var i = 0; i < data.hits.length; i++) {
+				foodItem = new foodCont({name: data.hits[i].fields.item_name, 
+					brand: data.hits[i].fields.brand_name, 
+					calories: data.hits[i].fields.nf_calories, 
+					servingSize: data.hits[i].fields.nf_serving_size_qty + " " + data.hits[i].fields.nf_serving_size_unit
+				});
+
+				searchList.add(foodItem);
+			}
+
+			//error handling Nutrionix API
+			}).error(function(e) {
+				alert("Error with nutritionix api call");
 			});
-
-			searchList.add(foodItem);
 		}
-
-		//error handling Nutrionix API
-		}).error(function(e) {
-			alert("Error with nutritionix api call");
-		});
 	});
-	
+
+	var searchView = new queryView({ el: $("#headerBar")});
 
 	//retrieve previous tracked calorie list
 	var retrievedObject = localStorage.getItem('prevCalList');
