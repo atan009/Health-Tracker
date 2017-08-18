@@ -25,17 +25,6 @@ $(window).on("load", function() {
 	//search box + example box template
 	var searchItem = $(".ex-navBar .item-box").clone().removeClass('ex-lsi');
 	var exItem = $('.ex-lsi').removeClass("list-search-item");
-
-	//container defaults
-	var foodCont = Backbone.Model.extend({
-		defaults: {
-			name: "",
-			brand: "",
-			calories: "",
-			servingSize: ""
-		}
-
-	});
 		
 	//searchFoodList
 	var searchFoodList = Backbone.Collection.extend({
